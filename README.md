@@ -1,5 +1,7 @@
 # Module de Facturation — API REST Spring Boot
 
+[![CI](https://github.com/erryhany/facturation/actions/workflows/ci.yml/badge.svg)](https://github.com/erryhany/facturation/actions/workflows/ci.yml)
+
 API REST de gestion de **clients** et de **factures** : création de factures multi-lignes, calcul automatique des totaux HT / TVA / TTC, validation métier et export JSON. L'API est documentée avec Swagger.
 
 ![Java](https://img.shields.io/badge/Java-17-red)
@@ -50,7 +52,26 @@ git clone https://github.com/erryhany/facturation.git
 cd facturation
 ```
 
-Définir les mots de passe des deux comptes de démonstration (obligatoire) :
+### Définir les mots de passe (obligatoire)
+
+Les mots de passe des deux comptes de démonstration ne sont pas dans le code : ils sont lus depuis `ADMIN_PASSWORD` et `USER_PASSWORD`. Sans eux, l'application refuse de démarrer.
+
+**Option 1 — fichier `.env` (recommandé).** Spring Boot le lit automatiquement au démarrage (`spring.config.import` dans `application.properties`) :
+
+```bash
+cp .env.example .env          # Windows : copy .env.example .env
+```
+
+Puis renseigner les deux valeurs dans `.env` :
+
+```properties
+ADMIN_PASSWORD=<mot_de_passe_admin>
+USER_PASSWORD=<mot_de_passe_user>
+```
+
+Le fichier `.env` est ignoré par git : il ne sera jamais commité.
+
+**Option 2 — variables d'environnement** (elles ont priorité sur le `.env`) :
 
 ```bash
 # Linux / macOS
@@ -64,7 +85,7 @@ $env:ADMIN_PASSWORD = "<mot_de_passe_admin>"
 $env:USER_PASSWORD  = "<mot_de_passe_user>"
 ```
 
-Puis démarrer :
+### Démarrer
 
 ```bash
 ./mvnw spring-boot:run        # Windows : mvnw.cmd spring-boot:run
@@ -118,6 +139,14 @@ curl -u admin:<mot_de_passe_admin> http://localhost:8080/api/facturation/clients
 | GET | `/search/client-period` | Factures d'un client sur une période |
 | GET | `/{id}/export` | Export JSON d'une facture |
 | POST | `/validate` | Valider une facture sans l'enregistrer |
+
+## Tests et intégration continue
+
+```bash
+./mvnw test
+```
+
+Les tests n'ont besoin d'aucune variable d'environnement. À chaque push, GitHub Actions compile le projet et lance les tests.
 
 ## Pistes d'évolution
 
