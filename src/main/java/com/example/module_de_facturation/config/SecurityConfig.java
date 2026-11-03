@@ -1,6 +1,7 @@
 package com.example.module_de_facturation.config;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -46,19 +47,21 @@ public class SecurityConfig {
 
     /**
      * Service de gestion des utilisateurs en mémoire
+     * Les mots de passe sont lus depuis les variables d'environnement ADMIN_PASSWORD et USER_PASSWORD
      * @return le service d'utilisateurs
      */
     @Bean
-    public UserDetailsService userDetailsService() {
+    public UserDetailsService userDetailsService(@Value("${ADMIN_PASSWORD}") String adminPassword,
+                                                 @Value("${USER_PASSWORD}") String userPassword) {
         UserDetails admin = User.builder()
                 .username("admin")
-                .password(passwordEncoder().encode("admin123"))
+                .password(passwordEncoder().encode(adminPassword))
                 .roles("ADMIN")
                 .build();
 
         UserDetails user = User.builder()
                 .username("user")
-                .password(passwordEncoder().encode("user123"))
+                .password(passwordEncoder().encode(userPassword))
                 .roles("USER")
                 .build();
 

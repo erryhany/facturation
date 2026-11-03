@@ -23,6 +23,7 @@ API REST de gestion de **clients** et de **factures** : création de factures mu
 |---|---|
 | Langage | Java 17 |
 | Framework | Spring Boot 3.5 (Web, Data JPA, Validation, Security) |
+| Sécurité | Spring Security, HTTP Basic, BCrypt |
 | Base de données | H2 en mémoire |
 | Documentation | springdoc-openapi (Swagger UI) |
 | Outils | Maven, Lombok |
@@ -47,6 +48,25 @@ Prérequis : Java 17 ou plus.
 ```bash
 git clone https://github.com/erryhany/facturation.git
 cd facturation
+```
+
+Définir les mots de passe des deux comptes de démonstration (obligatoire) :
+
+```bash
+# Linux / macOS
+export ADMIN_PASSWORD=<mot_de_passe_admin>
+export USER_PASSWORD=<mot_de_passe_user>
+```
+
+```powershell
+# Windows PowerShell
+$env:ADMIN_PASSWORD = "<mot_de_passe_admin>"
+$env:USER_PASSWORD  = "<mot_de_passe_user>"
+```
+
+Puis démarrer :
+
+```bash
 ./mvnw spring-boot:run        # Windows : mvnw.cmd spring-boot:run
 ```
 
@@ -55,6 +75,19 @@ cd facturation
 | API | http://localhost:8080/api/facturation |
 | Swagger UI | http://localhost:8080/swagger-ui.html |
 | Console H2 | http://localhost:8080/h2-console (JDBC URL : `jdbc:h2:mem:testdb`, utilisateur `sa`) |
+
+## Sécurité
+
+Les endpoints `/api/facturation/**` sont protégés par **HTTP Basic** (Spring Security, mots de passe hachés avec BCrypt). Swagger UI et la console H2 restent accessibles sans authentification.
+
+| Utilisateur | Rôle | Mot de passe |
+|---|---|---|
+| `admin` | ADMIN | variable `ADMIN_PASSWORD` |
+| `user` | USER | variable `USER_PASSWORD` |
+
+```bash
+curl -u admin:<mot_de_passe_admin> http://localhost:8080/api/facturation/clients
+```
 
 ## Endpoints principaux
 
@@ -88,7 +121,7 @@ cd facturation
 
 ## Pistes d'évolution
 
-- Authentification JWT et rôles ADMIN / USER sur les endpoints
+- Authentification JWT et autorisations par rôle (ADMIN / USER) sur chaque endpoint
 - Base PostgreSQL avec Docker Compose
 - Export PDF des factures
 - Tests unitaires et d'intégration (JUnit 5, MockMvc)
